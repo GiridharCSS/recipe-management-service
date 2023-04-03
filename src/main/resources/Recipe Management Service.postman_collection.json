@@ -355,7 +355,7 @@
 		},
 		{
 			"key": "baseurl",
-			"value": "",
+			"value": "http://localhost:8080/recipe-management-service",
 			"type": "default"
 		}
 	]
