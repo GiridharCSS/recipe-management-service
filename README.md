@@ -23,7 +23,7 @@ To use this API, users must obtain an access token aginst the valid credentials.
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/GiridharCSS/recipe-management-service.git`
+1. Clone the repository: `git clone https://github.com/example/recipe-management-service.git`
 2. Navigate to the project directory: `cd recipe-management-service`
 3. Run the application: `mvn spring-boot:run`
 

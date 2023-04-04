@@ -1,0 +1,362 @@
+{
+	"info": {
+		"_postman_id": "6423c0df-8a8c-4ea2-b52c-1256a681f9e3",
+		"name": "Recipe Management Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Token Generator",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"token\", pm.response.json().token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/authenticate",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Recipe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", () => {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200,201]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code name has string\", () => {\r",
+							"  pm.response.to.have.status(\"OK\");\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"id\", pm.response.json().id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"recipeName\": \"Veggie Burger\",\r\n    \"isVegetarian\": true,\r\n    \"serves\": 2,\r\n    \"ingredients\": [\r\n        {\r\n            \"ingredientName\": \"Lentils\",\r\n            \"quantity\": 200,\r\n            \"measurementUnit\": \"GRAM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Breadcrumbs\",\r\n            \"quantity\": 50,\r\n            \"measurementUnit\": \"GRAM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Egg\",\r\n            \"quantity\": 1,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Onion\",\r\n            \"quantity\": 1,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Garlic\",\r\n            \"quantity\": 2,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Salt\",\r\n            \"quantity\": 1,\r\n            \"measurementUnit\": \"TEASPOON\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Black pepper\",\r\n            \"quantity\": 1,\r\n            \"measurementUnit\": \"TEASPOON\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Burger buns\",\r\n            \"quantity\": 2,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Lettuce leaves\",\r\n            \"quantity\": 4,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Tomato slices\",\r\n            \"quantity\": 4,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Mayonnaise\",\r\n            \"quantity\": 2,\r\n            \"measurementUnit\": \"TABLESPOON\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Ketchup\",\r\n            \"quantity\": 2,\r\n            \"measurementUnit\": \"TABLESPOON\"\r\n        }\r\n    ],\r\n    \"cookingInstructions\": \"1. Rinse lentils and cook in boiling water for 20 minutes until soft. \\n2. Drain lentils and transfer to a large bowl. Mash lentils with a fork or potato masher. \\n3. Add breadcrumbs, egg, finely chopped onion and garlic, salt, and black pepper to the bowl. Mix well. \\n4. Form the mixture into 2 patties. \\n5. Heat oil in a pan over medium-high heat. Cook patties until browned and crispy, about 4 minutes per side. \\n6. Toast burger buns. Spread mayonnaise and ketchup on the bottom bun. Add lettuce, tomato, and veggie patty. Cover with the top bun. \\n7. Serve immediately.\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/recipes",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"recipes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update a Recipe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Checking available status codes for the operation\", function() {\r",
+							"pm.expect(pm.response.code).to.be.oneOf([200, 404])\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Testing the updated recipe name of the response body from the obatined JSON\", function () {\r",
+							"    var responseBody = pm.response.json();\r",
+							"    var updatedRecipeName = responseBody.recipeName;\r",
+							"    pm.expect(updatedRecipeName).to.equal(\"Updated Veggie Burger\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"recipeName\": \"Updated Veggie Burger\",\r\n    \"isVegetarian\": true,\r\n    \"serves\": 2,\r\n    \"ingredients\": [\r\n        {\r\n            \"ingredientName\": \"Lentils\",\r\n            \"quantity\": 200,\r\n            \"measurementUnit\": \"GRAM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Breadcrumbs\",\r\n            \"quantity\": 50,\r\n            \"measurementUnit\": \"GRAM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Egg\",\r\n            \"quantity\": 1,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Onion\",\r\n            \"quantity\": 1,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Garlic\",\r\n            \"quantity\": 2,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Salt\",\r\n            \"quantity\": 1,\r\n            \"measurementUnit\": \"TEASPOON\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Black pepper\",\r\n            \"quantity\": 1,\r\n            \"measurementUnit\": \"TEASPOON\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Burger buns\",\r\n            \"quantity\": 2,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Lettuce leaves\",\r\n            \"quantity\": 4,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Tomato slices\",\r\n            \"quantity\": 4,\r\n            \"measurementUnit\": \"ITEM\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Mayonnaise\",\r\n            \"quantity\": 2,\r\n            \"measurementUnit\": \"TABLESPOON\"\r\n        },\r\n        {\r\n            \"ingredientName\": \"Ketchup\",\r\n            \"quantity\": 2,\r\n            \"measurementUnit\": \"TABLESPOON\"\r\n        }\r\n    ],\r\n    \"cookingInstructions\": \"1. Rinse lentils and cook in boiling water for 20 minutes until soft. \\n2. Drain lentils and transfer to a large bowl. Mash lentils with a fork or potato masher. \\n3. Add breadcrumbs, egg, finely chopped onion and garlic, salt, and black pepper to the bowl. Mix well. \\n4. Form the mixture into 2 patties. \\n5. Heat oil in a pan over medium-high heat. Cook patties until browned and crispy, about 4 minutes per side. \\n6. Toast burger buns. Spread mayonnaise and ketchup on the bottom bun. Add lettuce, tomato, and veggie patty. Cover with the top bun. \\n7. Serve immediately.\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/recipes/{{id}}",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"recipes",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a Recipe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Checking available status codes for the operation\", function() {\r",
+							"pm.expect(pm.response.code).to.be.oneOf([200, 404])\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Testing the recipe name of the response body from the obatined JSON\", function () {\r",
+							"    var responseBody = pm.response.json();\r",
+							"    var recipeName = responseBody.recipeName;\r",
+							"    pm.expect(recipeName).to.equal(\"Updated Veggie Burger\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}/recipes/{{id}}",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"recipes",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all Recipes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Success\", function() {\r",
+							"pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Testing id of the response body from the obatined JSON\", function () {\r",
+							"    var responseBody = pm.response.json();\r",
+							"    var lastObject = responseBody[responseBody.length - 1];\r",
+							"    var lastId = lastObject.id;\r",
+							"    pm.expect(lastId).to.equal(pm.collectionVariables.get(\"id\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains at least one recipe\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.length).to.be.greaterThan(0);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}/recipes",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"recipes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Recipe",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Checking available status codes for the operation\", function() {\r",
+							"pm.expect(pm.response.code).to.be.oneOf([204, 404])\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// const id = 210989999; // Replace with a non-existent ID\r",
+							"\r",
+							"// const token = pm.collectionVariables.get(\"token\");\r",
+							"\r",
+							"// // Send the DELETE request\r",
+							"// pm.sendRequest({\r",
+							"//     url: pm.collectionVariables.get(\"baseUrl\") + \"/recipes/\" + id ,\r",
+							"//     method: 'DELETE',\r",
+							"//     header: {\r",
+							"//         'Content-Type': 'application/json',\r",
+							"//         'Authorization': 'Bearer ' + token\r",
+							"//     }\r",
+							"// }, function (err, res) {\r",
+							"//     if (err) {\r",
+							"//         console.error(err);\r",
+							"//     } else {\r",
+							"//         pm.test(\"Status code is 404\", function () {\r",
+							"//             pm.expect(res.status).to.equal(404);\r",
+							"//         });\r",
+							"//         pm.test(\"Response body contains error message\", function () {\r",
+							"//             pm.expect(res.body).to.include('Resource not found');\r",
+							"//         });\r",
+							"//     }\r",
+							"// });"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}/recipes/2",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"recipes",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// pm.sendRequest({",
+					"//     url: \"http://localhost:8080/recipe-management-service/authenticate\",",
+					"//     method: 'POST',",
+					"//     headers: {",
+					"//         'Content-Type': 'application/json'",
+					"//     },",
+					"//     body: {",
+					"//         mode: 'raw',",
+					"//         raw: JSON.stringify({\"username\": \"admin\",\"password\": \"password\"})",
+					"//     }",
+					"// }, function (err, res) {",
+					"//     console.log(res.json());",
+					"// });",
+					"// pm.collectionVariables.set(\"token\", res.json().token);",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "id",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "baseurl",
+			"value": "http://localhost:8080/recipe-management-service",
+			"type": "default"
+		}
+	]
+}
